@@ -1,59 +1,46 @@
 
 <template>
-    <div class="container-fluid">
-        <div class="row">
+    <div>
+        <div class="row" v-if="weather">
             <div class="col-md-12">
-                <h1 class="text-center">Welcome to Tourist Spots in Japan</h1>
-            </div>
-        </div>
 
-        <label for="city">Select a city you want to explore:</label>
-        <select v-model="city" name="city" @change="getInfo">
-            <option value="Tokyo">Tokyo</option>
-            <option value="Yokohama">Yokohama</option>
-            <option value="Kyoto">Kyoto</option>
-            <option value="Osaka">Osaka</option>
-            <option value="Sapporo">Sapporo</option>
-            <option value="Nagoya">Nagoya</option>
-        </select>
-
-
-        <div class="row" v-if="cities">
-            <div class="col-md-6" v-for="(city, index) in cities.data" :key="index">
-                <div class="card mb-4">
-                    <img class="card-img-top" :src="city.image" alt="Card image cap">
+                <div class="card mb-8">
+                    <img class="card-img-top" :src="cityData[0].image" alt="Card image cap">
                     <div class="card-body">
                         <div>
-
-                            <h5 class="card-title">{{ city.name }}</h5>
-
-                            <p>{{ city.name }}</p>
+                            <h5 class="card-title">{{ city }} {{ weather.sys.country }}</h5>
+                            <p>{{ cityData[0].description }}</p>
+                            <h6>{{ city }} Weather</h6>
+                            <p>{{ weather.name }}:{{ kelvinToCelsius(weather.main.temp) }}°C</p>
                         </div>
-                        <div>
-                            <p>{{ city.description }} Places</p>
+                        <div v-if="places">
+                            <h6>{{ city }} Places</h6>
+                            <ul>
+                                <li v-for="place in places" :key="place.id">{{ place.name }}</li>
+                            </ul>
                         </div>
-                        <router-link :to="{ path: '/city', query: { city: city.name } }" class="btn btn-primary">Learn
-                            Mores</router-link>
+
                     </div>
                 </div>
             </div>
         </div>
 
-
-
-
     </div>
-</template >
+</template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 
+const route = useRoute();
+console.log(route.query);
 
-const city = ref('');
-const weather = ref('');
+const city = route.query.city;
 const places = ref('');
+const weather = ref();
+let cityData = ref();
+
 const cities = reactive({
     data: [
         {
@@ -95,7 +82,22 @@ const cities = reactive({
         },
     ]
 })
+cityData = cities.data.filter((obj) => {
+    return obj.name.toLowerCase().includes(city.toLowerCase());
+});
+console.log(cityData);
 
-const route = useRoute();
+onMounted(async () => {
+    await axios.get(`/api/weather/${city}`).then(response => {
+        weather.value = response.data;
+    });
+    await axios.get(`/api/places/${city}`).then(response => {
+        places.value = response.data;
+        console.log(response.data);
+    });
+});
+const kelvinToCelsius = (kelvin) => {
+    return kelvin - 273.15;
+}
 
 </script>

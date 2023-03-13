@@ -4,10 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>How To Install Vue 3 in Laravel 10 From Scratch - Laravel</title>
-
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:[email protected];600;700&display=swap" rel="stylesheet">
+        <title> Japan Tourist Spots</title>
 
         <!-- Styles -->
         <style>
@@ -18,15 +15,21 @@
             body {
                 font-family: 'Nunito', sans-serif;
             }
-        </style>
+        </style>   
+         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    
     </head>
     <body >
+        <header>
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand" href="/">Japan Tourist Spots</a>
+        </nav>
+        </header>
         <div id="app">
-            <div >
-                <welcome/>
-            </div>
+            <router-view></router-view>
         </div>
 
         <script src="{{ mix('js/app.js') }}"></script>
+        
     </body>
 </html>

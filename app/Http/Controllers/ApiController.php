@@ -3,23 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Http;
 class ApiController extends Controller
 {
 public function getWeather($city)
 {
-    $client = new \GuzzleHttp\Client();
-    $response = $client->request('GET', 'https://api.openweathermap.org/data/2.5/forecast?q='.$city.',JP&appid=979d4d0c647abd4ac2bce0b8405662ef');
-
-    return $response->getBody();
+    $apiKey = env('OPENWEATHERMAP_API_KEY');
+    $url = "https://api.openweathermap.org/data/2.5/weather?q={$city}&appid={$apiKey}";
+    $response = Http::get($url);
+    return $response->json();
 }
 
 public function getPlaces($city)
 {
-    $client = new \GuzzleHttp\Client();
-    $response = $client->request('GET', 'https://api.foursquare.com/v2/venues/search?near='.$city.',JP&limit=5&categoryId=4deefb944765f83613cdba6e&client_id=LLVVQ103MD2PDU1G4NXP1MHINOKV145FL13TLDIST2HYM1FU&client_secret=G01LQWJMYSL52ZKLKLVC2B1O2BDIEZ3E01A3G5TWJ2T4P1IF&v=20210309');
+    $accessToken = env('FOURSQUARE_ACCESS_TOKEN');
+    $endpoint = "https://api.foursquare.com/v3/places/search?near=".$city.",JP";
 
-    return $response->getBody();
+    $apiRequest = array(
+        "endpoint"=>$endpoint,
+        "auth"=>$accessToken,
+        "accept"=>"application/json"
+    );
+
+    $response = Http::withHeaders([
+        'Content-Type' => 'application/json',
+        'Authorization' => $apiRequest['auth'],
+        'Accept' => $apiRequest['accept']
+    ])->get($apiRequest['endpoint']);
+
+    $places = json_decode($response);
+    return $places->results;
 }
 
 }
