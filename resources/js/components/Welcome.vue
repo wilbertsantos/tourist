@@ -7,17 +7,6 @@
             </div>
         </div>
 
-        <label for="city">Select a city you want to explore:</label>
-        <select v-model="city" name="city" @change="getInfo">
-            <option value="Tokyo">Tokyo</option>
-            <option value="Yokohama">Yokohama</option>
-            <option value="Kyoto">Kyoto</option>
-            <option value="Osaka">Osaka</option>
-            <option value="Sapporo">Sapporo</option>
-            <option value="Nagoya">Nagoya</option>
-        </select>
-
-
         <div class="row" v-if="cities">
             <div class="col-md-6" v-for="(city, index) in cities.data" :key="index">
                 <div class="card mb-4">
@@ -38,9 +27,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
     </div>
 </template >
